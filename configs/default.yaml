@@ -22,6 +22,7 @@ train:
   batch_size: 128
   epochs: 12
   optimizer: adamw
+  lr_poly_power: 1.0
   lr: 0.001
   weight_decay: 0.01
 eval:

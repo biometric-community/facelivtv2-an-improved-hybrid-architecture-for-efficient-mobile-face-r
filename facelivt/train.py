@@ -70,14 +70,18 @@ def train(cfg: dict, device_override: Optional[str] = None) -> Dict:
         s=float(cfg["model"].get("cosface_s", 16.0)),
         m=float(cfg["model"].get("cosface_m", 0.25)),
     ).to(device)
-    n_params = count_params(model)
+    # Tables 1-4 count the deployed network; the CosFace head is removed at inference
+    n_params = count_params(model.backbone)
     opt = torch.optim.AdamW(
         model.parameters(),
         lr=float(cfg["train"].get("lr", 1e-3)),
         weight_decay=float(cfg["train"].get("weight_decay", 0.01)),
     )
     epochs = int(cfg["train"].get("epochs", 12))
-    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=max(epochs, 1))
+    # Sec. 4: AdamW with a polynomial-decay learning-rate schedule
+    sched = torch.optim.lr_scheduler.PolynomialLR(
+        opt, total_iters=max(epochs, 1), power=float(cfg["train"].get("lr_poly_power", 1.0))
+    )
     ckpt_dir = Path(cfg["paths"]["checkpoint_dir"])
     log_dir = Path(cfg["paths"]["log_dir"])
     ckpt_dir.mkdir(parents=True, exist_ok=True)
