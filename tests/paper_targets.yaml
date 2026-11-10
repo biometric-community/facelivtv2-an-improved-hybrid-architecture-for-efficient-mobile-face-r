@@ -1,0 +1,29 @@
+# Setyawan et al., "FaceLiVTv2: An Improved Hybrid Architecture for Efficient Mobile Face
+# Recognition", IEEE TBIOM 2026, doi:10.1109/TBIOM.2026.3690540, arXiv:2604.09127.
+source: arXiv:2604.09127
+tolerance_pp: 1.0
+
+# Table 3: parameters (millions) of the deployed (reparameterised) backbones. L is left out:
+# the authors' code gives 8.83M against the 8.52M printed in the table.
+params_m:
+  xs: 2.9
+  s: 4.62
+  m: 7.04
+params_tolerance_m: 0.1
+
+# Table 3, XS: stage channels and depths, Lite MHLA in stages 3-4, GDConv head, 512-d output.
+xs_architecture:
+  dims: [32, 64, 128, 256]
+  depths: [3, 3, 9, 3]
+  mixers: [repmix, repmix, mhla, mhla]
+  head_channels: 1284
+  embed_dim: 512
+
+# Sec. 4.1.1: AdamW, polynomial-decay schedule, l2 = 1e-2.
+weight_decay: 0.01
+
+# Table 4, FaceLiVTv2-XS, verification accuracy (%).
+published_values:
+  LFW: 99.63
+  CALFW: 95.58
+  CPLFW: 90.38
